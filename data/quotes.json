@@ -1,4 +1,37 @@
 {
-  "updatedAt": null,
-  "stocks": []
+  "updatedAt": "2026-07-26T17:04:28+09:00",
+  "stocks": [
+    {
+      "name": "삼성전자",
+      "code": "005930",
+      "price": 249500,
+      "diff": -20500,
+      "rate": -7.59,
+      "direction": "down"
+    },
+    {
+      "name": "SK하이닉스",
+      "code": "000660",
+      "price": 1759000,
+      "diff": -160000,
+      "rate": -8.34,
+      "direction": "down"
+    },
+    {
+      "name": "카카오",
+      "code": "035720",
+      "price": 36200,
+      "diff": -950,
+      "rate": -2.56,
+      "direction": "down"
+    },
+    {
+      "name": "NAVER",
+      "code": "035420",
+      "price": 207500,
+      "diff": -12500,
+      "rate": -5.68,
+      "direction": "down"
+    }
+  ]
 }
