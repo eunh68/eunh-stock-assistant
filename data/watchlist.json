@@ -1,6 +1,7 @@
 [
-  { "name": "삼성전자", "code": "005930" },
-  { "name": "SK하이닉스", "code": "000660" },
-  { "name": "카카오", "code": "035720" },
-  { "name": "NAVER", "code": "035420" }
+  { "name": "삼성전자", "code": "005930", "type": "stock", "market": "KOSPI", "avg_price": null },
+  { "name": "KODEX 200", "code": "069500", "type": "etf" },
+  { "name": "KODEX 코스닥150", "code": "229200", "type": "etf" },
+  { "name": "인투셀", "code": "287840", "type": "stock", "market": "KOSDAQ", "avg_price": null },
+  { "name": "KODEX 방산TOP10", "code": "0080G0", "type": "etf" }
 ]
