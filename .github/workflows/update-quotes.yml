@@ -1,0 +1,43 @@
+name: Update KIS stock quotes
+
+on:
+  schedule:
+    # Every 10 minutes, 00:00-06:59 UTC = 09:00-15:59 KST, weekdays (KRX hours)
+    - cron: "*/10 0-6 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-quotes
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch quotes from KIS API
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+        run: python scripts/fetch_kis_quotes.py
+
+      - name: Commit updated quotes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/quotes.json
+          git diff --cached --quiet || git commit -m "Update stock quotes"
+          git push

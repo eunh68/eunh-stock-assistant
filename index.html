@@ -150,33 +150,44 @@
 <div class="list" id="list"></div>
 
 <div class="hint">
-  가격을 수정하려면 이 파일(index.html)을 열어서 아래쪽 <code>&lt;script&gt;</code> 안에 있는
-  <code>stocks</code> 배열 값을 원하는 종목명/현재가/전일종가로 바꾸고 저장한 뒤
-  새로고침하세요. 등락률은 자동으로 계산됩니다.
+  이 페이지는 <code>data/quotes.json</code>을 읽어서 표시합니다. 이 파일은
+  GitHub Actions가 10분마다 한국투자증권(KIS) API로 직접 갱신하므로 손으로 편집하지
+  마세요. 관심종목을 추가/삭제하거나 종목명을 바꾸려면 <code>data/watchlist.json</code>의
+  <code>name</code>/<code>code</code> 값만 수정하면 다음 자동 갱신 때 반영됩니다.
 </div>
 
 <script>
-  // ▼▼▼ 여기 값만 수정하세요 (종목명, 현재가, 전일종가) ▼▼▼
-  const stocks = [
-    { name: "삼성전자",   code: "005930", price: 78500,  prevClose: 77800 },
-    { name: "SK하이닉스", code: "000660", price: 215000, prevClose: 219500 },
-    { name: "카카오",     code: "035720", price: 41200,  prevClose: 41200 },
-    { name: "NAVER",      code: "035420", price: 198500, prevClose: 194000 },
-  ];
-  // ▲▲▲ 여기까지 ▲▲▲
-
   const fmtNumber = (n) => n.toLocaleString("ko-KR");
 
-  function render() {
+  async function render() {
     const list = document.getElementById("list");
-    list.innerHTML = "";
+    const updatedEl = document.getElementById("updated");
 
-    stocks.forEach((s) => {
-      const diff = s.price - s.prevClose;
-      const pct = s.prevClose ? (diff / s.prevClose) * 100 : 0;
-      const dir = diff > 0 ? "up" : diff < 0 ? "down" : "flat";
-      const sign = diff > 0 ? "+" : "";
-      const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "-";
+    let data;
+    try {
+      const res = await fetch("data/quotes.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("quotes.json not found");
+      data = await res.json();
+    } catch (err) {
+      list.innerHTML = `<div class="card" style="justify-content:center;color:var(--sub);">
+        시세 데이터를 불러오지 못했어요. (GitHub Pages 등 웹 서버로 열었는지 확인해 주세요)
+      </div>`;
+      updatedEl.textContent = "";
+      return;
+    }
+
+    if (!data.stocks || data.stocks.length === 0) {
+      list.innerHTML = `<div class="card" style="justify-content:center;color:var(--sub);">
+        아직 시세 데이터가 없어요. GitHub Actions 워크플로우가 처음 실행되면 표시됩니다.
+      </div>`;
+      updatedEl.textContent = "";
+      return;
+    }
+
+    list.innerHTML = "";
+    data.stocks.forEach((s) => {
+      const sign = s.diff > 0 ? "+" : s.diff < 0 ? "-" : "";
+      const arrow = s.direction === "up" ? "▲" : s.direction === "down" ? "▼" : "-";
 
       const card = document.createElement("div");
       card.className = "card";
@@ -187,16 +198,17 @@
         </div>
         <div class="right">
           <div class="price">${fmtNumber(s.price)}원</div>
-          <div class="change ${dir}">
-            ${arrow} ${fmtNumber(Math.abs(diff))} (${sign}${pct.toFixed(2)}%)
+          <div class="change ${s.direction}">
+            ${arrow} ${fmtNumber(Math.abs(s.diff))} (${sign}${Math.abs(s.rate).toFixed(2)}%)
           </div>
         </div>
       `;
       list.appendChild(card);
     });
 
-    document.getElementById("updated").textContent =
-      "마지막 갱신: " + new Date().toLocaleString("ko-KR");
+    updatedEl.textContent = data.updatedAt
+      ? "마지막 갱신: " + new Date(data.updatedAt).toLocaleString("ko-KR")
+      : "";
   }
 
   render();
