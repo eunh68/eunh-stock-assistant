@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .kis_token_cache.json
+.kis_alert_state.json
+
+# Personal/financial details — never tracked in this public repo.
+data/profile.md

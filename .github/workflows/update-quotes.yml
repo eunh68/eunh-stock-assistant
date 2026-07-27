@@ -28,31 +28,36 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Restore KIS token cache
+      - name: Restore KIS cache files
         uses: actions/cache/restore@v4
         with:
-          path: .kis_token_cache.json
-          key: kis-token-cache-${{ github.run_id }}
+          path: |
+            .kis_token_cache.json
+            .kis_alert_state.json
+          key: kis-cache-${{ github.run_id }}
           restore-keys: |
-            kis-token-cache-
+            kis-cache-
 
       - name: Fetch quotes from KIS API
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_HOLDINGS_JSON: ${{ secrets.KIS_HOLDINGS_JSON }}
         run: python scripts/fetch_kis_quotes.py
 
-      - name: Save KIS token cache
+      - name: Save KIS cache files
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: .kis_token_cache.json
-          key: kis-token-cache-${{ github.run_id }}
+          path: |
+            .kis_token_cache.json
+            .kis_alert_state.json
+          key: kis-cache-${{ github.run_id }}
 
       - name: Commit updated quotes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/quotes.json data/alert_state.json
+          git add data/quotes.json
           git diff --cached --quiet || git commit -m "Update stock quotes"
           git push

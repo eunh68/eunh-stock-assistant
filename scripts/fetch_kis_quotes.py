@@ -15,6 +15,12 @@ The KIS access token is valid for 24h and KIS asks that it not be reissued
 more often than necessary, so it's cached in TOKEN_CACHE_PATH (restored /
 saved by the workflow via actions/cache — never committed to git, since
 this repo is public and the token is a live bearer credential).
+
+Per-holding avg cost and share count are personal financial details, so
+they're never written to data/watchlist.json (public, git-tracked). They
+live only in the KIS_HOLDINGS_JSON GitHub Secret, keyed by "account|code",
+and quotes.json (also public) never includes them either — only the
+computed sellAlert flag is exposed.
 """
 
 import json
@@ -29,12 +35,19 @@ import requests
 ROOT = Path(__file__).resolve().parent.parent
 WATCHLIST_PATH = ROOT / "data" / "watchlist.json"
 OUTPUT_PATH = ROOT / "data" / "quotes.json"
-ALERT_STATE_PATH = ROOT / "data" / "alert_state.json"
+ALERT_STATE_PATH = ROOT / ".kis_alert_state.json"
 TOKEN_CACHE_PATH = ROOT / ".kis_token_cache.json"
 
 BASE_URL = os.environ.get("KIS_BASE_URL", "https://openapi.koreainvestment.com:9443")
 APP_KEY = os.environ["KIS_APP_KEY"]
 APP_SECRET = os.environ["KIS_APP_SECRET"]
+
+# {"account|code": {"avg_price": ..., "shares": ...}, ...} — never in the repo,
+# only in the KIS_HOLDINGS_JSON secret.
+try:
+    HOLDINGS = json.loads(os.environ.get("KIS_HOLDINGS_JSON") or "{}")
+except json.JSONDecodeError:
+    HOLDINGS = {}
 
 KST = timezone(timedelta(hours=9))
 UP_SIGNS = {"1", "2"}
@@ -197,15 +210,14 @@ def main() -> None:
             "code": code,
             "account": item.get("account"),
             "type": item.get("type", "stock"),
-            "shares": item.get("shares"),
-            "avgPrice": item.get("avg_price"),
             "price": price,
             "diff": raw_diff if direction == "up" else -raw_diff if direction == "down" else 0,
             "rate": raw_rate if direction == "up" else -raw_rate if direction == "down" else 0.0,
             "direction": direction,
         }
 
-        avg_price = item.get("avg_price")
+        holding = HOLDINGS.get(f"{item.get('account')}|{code}", {})
+        avg_price = holding.get("avg_price")
         market = item.get("market")
         index_code = MARKET_INDEX_CODE.get(market)
         alert_eligible = (
