@@ -11,10 +11,24 @@ order.
 Requires KIS_APP_KEY / KIS_APP_SECRET in the environment (populated from
 GitHub Secrets by the update-quotes workflow). Never hardcode real keys here.
 
-The KIS access token is valid for 24h and KIS asks that it not be reissued
-more often than necessary, so it's cached in TOKEN_CACHE_PATH (restored /
-saved by the workflow via actions/cache — never committed to git, since
-this repo is public and the token is a live bearer credential).
+Token policy (hard rule — do not loosen):
+KIS issues at most one access token per day and warns that frequent
+reissues can get the account restricted. Every issue also sends the owner
+a KakaoTalk alert, so an unattended reissue is never acceptable.
+
+  * The token value is cached in TOKEN_CACHE_PATH (restored/saved by the
+    workflow via actions/cache) and reused until it nears expiry. It is
+    never committed to git — this repo is public and the token is a live
+    bearer credential.
+  * The *date* of the last issue is committed to TOKEN_STATUS_PATH. That
+    file survives cache eviction, so it — not the cache — is what enforces
+    the one-per-day cap.
+  * If a token is needed but one was already issued today, this script
+    REFUSES to issue and stops without updating quotes, leaving a notice
+    on the page for the owner. It never decides on its own to reissue.
+  * The only way to reissue on the same day is the owner manually running
+    the workflow with force_token_reissue enabled, which sets
+    ALLOW_TOKEN_REISSUE=true.
 
 Per-holding avg cost and share count are personal financial details, so
 they're never written to data/watchlist.json (public, git-tracked). They
@@ -37,10 +51,15 @@ WATCHLIST_PATH = ROOT / "data" / "watchlist.json"
 OUTPUT_PATH = ROOT / "data" / "quotes.json"
 ALERT_STATE_PATH = ROOT / ".kis_alert_state.json"
 TOKEN_CACHE_PATH = ROOT / ".kis_token_cache.json"
+TOKEN_STATUS_PATH = ROOT / "data" / "token_status.json"
 
 BASE_URL = os.environ.get("KIS_BASE_URL", "https://openapi.koreainvestment.com:9443")
 APP_KEY = os.environ["KIS_APP_KEY"]
 APP_SECRET = os.environ["KIS_APP_SECRET"]
+
+# Only ever true when the owner manually runs the workflow with
+# force_token_reissue enabled. Scheduled runs must never set this.
+ALLOW_TOKEN_REISSUE = os.environ.get("ALLOW_TOKEN_REISSUE", "").strip().lower() == "true"
 
 # {"account|code": {"avg_price": ..., "shares": ...}, ...} — never in the repo,
 # only in the KIS_HOLDINGS_JSON secret.
@@ -62,6 +81,13 @@ MARKET_INDEX_CODE = {"KOSPI": "0001", "KOSDAQ": "1001"}
 ALERT_ELIGIBLE_ACCOUNTS = {"위탁"}
 
 
+class TokenIssueBlocked(RuntimeError):
+    """A new token is needed, but today's single allowed issue was already used.
+
+    Never catch this to retry — the whole point is that the owner decides.
+    """
+
+
 def get_access_token() -> str:
     cached = load_json(TOKEN_CACHE_PATH, None)
     if cached:
@@ -71,7 +97,18 @@ def get_access_token() -> str:
             if 0 <= age < TOKEN_TTL_SECONDS:
                 return cached["accessToken"]
         except (KeyError, ValueError, TypeError):
-            pass  # corrupt/unexpected cache contents — fall through and reissue
+            pass  # corrupt cache — falls through to the daily-cap check below
+
+    today = datetime.now(KST).date().isoformat()
+    last_issued = load_json(TOKEN_STATUS_PATH, {}).get("lastIssuedDate")
+
+    if last_issued == today and not ALLOW_TOKEN_REISSUE:
+        raise TokenIssueBlocked(
+            f"오늘({today}) 이미 토큰을 발급받았는데 캐시에 유효한 토큰이 없습니다. "
+            "하루 1회 제한에 따라 자동 재발급하지 않고 중단합니다. "
+            "재발급이 필요하면 Actions에서 이 워크플로우를 수동 실행하면서 "
+            "force_token_reissue 를 true 로 켜 주세요."
+        )
 
     resp = requests.post(
         f"{BASE_URL}/oauth2/tokenP",
@@ -85,6 +122,20 @@ def get_access_token() -> str:
     resp.raise_for_status()
     token = resp.json()["access_token"]
 
+    # Record the issue before doing anything else, so a later crash can never
+    # cause a second issue on the same day to look permissible.
+    TOKEN_STATUS_PATH.write_text(
+        json.dumps(
+            {
+                "lastIssuedDate": today,
+                "lastIssuedAt": datetime.now(KST).isoformat(timespec="seconds"),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     TOKEN_CACHE_PATH.write_text(
         json.dumps({"accessToken": token, "issuedAt": datetime.now(timezone.utc).isoformat()}),
         encoding="utf-8",
@@ -182,10 +233,28 @@ def evaluate_sell_alert(index_level: float, avg_price: float, price: int, state:
     return sell_alert, updated_state
 
 
+def post_notice(message: str) -> None:
+    """Leave the last known prices in place and surface a notice on the page."""
+    data = load_json(OUTPUT_PATH, {"updatedAt": None, "stocks": []})
+    data["notice"] = message
+    data["noticeAt"] = datetime.now(KST).isoformat(timespec="seconds")
+    OUTPUT_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> None:
     watchlist = load_json(WATCHLIST_PATH, [])
     alert_state = load_json(ALERT_STATE_PATH, {})
-    token = get_access_token()
+
+    try:
+        token = get_access_token()
+    except TokenIssueBlocked as exc:
+        post_notice(str(exc))
+        print(f"[blocked] {exc}", file=sys.stderr)
+        summary = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary:
+            with open(summary, "a", encoding="utf-8") as fh:
+                fh.write(f"### ⚠️ 토큰 재발급 승인 필요\n\n{exc}\n")
+        return
 
     price_cache: dict[str, dict] = {}
     index_cache: dict[str, float] = {}

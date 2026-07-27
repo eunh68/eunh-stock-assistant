@@ -2,16 +2,26 @@ name: Update KIS stock quotes
 
 on:
   schedule:
-    # Every 10 minutes, 00:00-06:59 UTC = 09:00-15:59 KST, weekdays (KRX hours)
+    # Every 10 minutes, 00:00-06:59 UTC = 09:00-15:59 KST, weekdays (KRX hours).
+    # GitHub has fired this outside the configured window before, so nothing here
+    # may depend on the schedule being punctual — the one-token-per-day cap in
+    # scripts/fetch_kis_quotes.py is what actually protects the KIS account.
     - cron: "*/10 0-6 * * 1-5"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_token_reissue:
+        description: "오늘 이미 발급받았어도 KIS 토큰을 다시 발급받습니다 (카톡 알림이 한 번 더 옵니다)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 concurrency:
   group: update-quotes
-  cancel-in-progress: true
+  # Never cancel a run in flight: it could be killed between issuing a token and
+  # saving it to the cache, which would waste that day's single allowed issue.
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -28,6 +38,8 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      # Do NOT change these cache keys. A changed key is a cache miss, and a
+      # cache miss on a day whose token was already issued stops the update.
       - name: Restore KIS cache files
         uses: actions/cache/restore@v4
         with:
@@ -43,6 +55,8 @@ jobs:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           KIS_HOLDINGS_JSON: ${{ secrets.KIS_HOLDINGS_JSON }}
+          # Only ever true for a manual run with the toggle switched on.
+          ALLOW_TOKEN_REISSUE: ${{ inputs.force_token_reissue }}
         run: python scripts/fetch_kis_quotes.py
 
       - name: Save KIS cache files
@@ -55,9 +69,10 @@ jobs:
           key: kis-cache-${{ github.run_id }}
 
       - name: Commit updated quotes
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/quotes.json
+          git add data/quotes.json data/token_status.json
           git diff --cached --quiet || git commit -m "Update stock quotes"
           git push

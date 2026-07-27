@@ -150,6 +150,22 @@
   .card.alert {
     border-color: var(--up);
   }
+  .notice {
+    max-width: 460px;
+    margin: 0 auto 20px;
+    padding: 13px 16px;
+    border: 1px solid var(--up);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--up) 10%, transparent);
+    color: var(--text);
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+  .notice b {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--up);
+  }
   .alert-badge {
     display: inline-block;
     margin-top: 6px;
@@ -183,6 +199,7 @@
 
 <h1>내 관심종목</h1>
 <div class="updated" id="updated"></div>
+<div id="notice"></div>
 <div class="list" id="list"></div>
 
 <div class="hint">
@@ -224,6 +241,19 @@
       </div>`;
       updatedEl.textContent = "";
       return;
+    }
+
+    const noticeEl = document.getElementById("notice");
+    if (data.notice) {
+      const at = data.noticeAt
+        ? new Date(data.noticeAt).toLocaleString("ko-KR")
+        : "";
+      noticeEl.innerHTML = `<div class="notice">
+        <b>⚠️ 시세 갱신 중단됨 — 확인이 필요합니다</b>
+        ${data.notice}${at ? `<br>(${at})` : ""}
+      </div>`;
+    } else {
+      noticeEl.innerHTML = "";
     }
 
     const groups = new Map();
