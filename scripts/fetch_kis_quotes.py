@@ -10,6 +10,11 @@ order.
 
 Requires KIS_APP_KEY / KIS_APP_SECRET in the environment (populated from
 GitHub Secrets by the update-quotes workflow). Never hardcode real keys here.
+
+The KIS access token is valid for 24h and KIS asks that it not be reissued
+more often than necessary, so it's cached in TOKEN_CACHE_PATH (restored /
+saved by the workflow via actions/cache — never committed to git, since
+this repo is public and the token is a live bearer credential).
 """
 
 import json
@@ -25,6 +30,7 @@ ROOT = Path(__file__).resolve().parent.parent
 WATCHLIST_PATH = ROOT / "data" / "watchlist.json"
 OUTPUT_PATH = ROOT / "data" / "quotes.json"
 ALERT_STATE_PATH = ROOT / "data" / "alert_state.json"
+TOKEN_CACHE_PATH = ROOT / ".kis_token_cache.json"
 
 BASE_URL = os.environ.get("KIS_BASE_URL", "https://openapi.koreainvestment.com:9443")
 APP_KEY = os.environ["KIS_APP_KEY"]
@@ -34,6 +40,7 @@ KST = timezone(timedelta(hours=9))
 UP_SIGNS = {"1", "2"}
 DOWN_SIGNS = {"4", "5"}
 SELL_ALERT_GAP = 10.0  # percentage points, from profile.md 매도 규칙
+TOKEN_TTL_SECONDS = 23 * 60 * 60  # KIS 토큰 유효기간은 24h — 여유를 두고 23h로 캐시
 
 # 코스피 -> KOSPI, 코스닥 -> KOSDAQ (profile.md 지수 자동매칭)
 MARKET_INDEX_CODE = {"KOSPI": "0001", "KOSDAQ": "1001"}
@@ -43,6 +50,16 @@ ALERT_ELIGIBLE_ACCOUNTS = {"위탁"}
 
 
 def get_access_token() -> str:
+    cached = load_json(TOKEN_CACHE_PATH, None)
+    if cached:
+        try:
+            issued_at = datetime.fromisoformat(cached["issuedAt"])
+            age = (datetime.now(timezone.utc) - issued_at).total_seconds()
+            if 0 <= age < TOKEN_TTL_SECONDS:
+                return cached["accessToken"]
+        except (KeyError, ValueError, TypeError):
+            pass  # corrupt/unexpected cache contents — fall through and reissue
+
     resp = requests.post(
         f"{BASE_URL}/oauth2/tokenP",
         json={
@@ -53,7 +70,13 @@ def get_access_token() -> str:
         timeout=10,
     )
     resp.raise_for_status()
-    return resp.json()["access_token"]
+    token = resp.json()["access_token"]
+
+    TOKEN_CACHE_PATH.write_text(
+        json.dumps({"accessToken": token, "issuedAt": datetime.now(timezone.utc).isoformat()}),
+        encoding="utf-8",
+    )
+    return token
 
 
 def fetch_price(token: str, code: str) -> dict:
