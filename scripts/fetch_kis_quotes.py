@@ -38,6 +38,9 @@ SELL_ALERT_GAP = 10.0  # percentage points, from profile.md 매도 규칙
 # 코스피 -> KOSPI, 코스닥 -> KOSDAQ (profile.md 지수 자동매칭)
 MARKET_INDEX_CODE = {"KOSPI": "0001", "KOSDAQ": "1001"}
 
+# 매도 알림 규칙이 적용되는 계좌 (일반 위탁만 — ISA/연금저축은 규칙 미적용)
+ALERT_ELIGIBLE_ACCOUNTS = {"위탁"}
+
 
 def get_access_token() -> str:
     resp = requests.post(
@@ -108,7 +111,7 @@ def load_json(path: Path, default):
         return default
 
 
-def evaluate_sell_alert(token: str, item: dict, price: int, state: dict) -> tuple[bool, dict]:
+def evaluate_sell_alert(index_level: float, avg_price: float, price: int, state: dict) -> tuple[bool, dict]:
     """Returns (sellAlert, updated_state_entry) for one individual stock.
 
     Approximation: since we don't have the index level on the actual
@@ -117,15 +120,6 @@ def evaluate_sell_alert(token: str, item: dict, price: int, state: dict) -> tupl
     comparison as relative to when tracking started, not the real
     purchase date.
     """
-    avg_price = item.get("avg_price")
-    market = item.get("market")
-    index_code = MARKET_INDEX_CODE.get(market)
-
-    if avg_price is None or index_code is None:
-        return False, state
-
-    index_level = fetch_index_level(token, index_code)
-
     peak_price = max(state.get("peakPrice", price), price, avg_price)
     peak_index_level = state.get("peakIndexLevel", index_level)
     entry_index_level = state.get("entryIndexLevel", index_level)
@@ -157,9 +151,16 @@ def main() -> None:
     alert_state = load_json(ALERT_STATE_PATH, {})
     token = get_access_token()
 
+    price_cache: dict[str, dict] = {}
+    index_cache: dict[str, float] = {}
+
     stocks = []
     for item in watchlist:
-        output = fetch_price(token, item["code"])
+        code = item["code"]
+        if code not in price_cache:
+            price_cache[code] = fetch_price(token, code)
+            time.sleep(0.25)  # stay well under the KIS per-second rate limit
+        output = price_cache[code]
 
         sign_code = output["prdy_vrss_sign"]
         direction = "up" if sign_code in UP_SIGNS else "down" if sign_code in DOWN_SIGNS else "flat"
@@ -170,28 +171,45 @@ def main() -> None:
 
         entry = {
             "name": item["name"],
-            "code": item["code"],
+            "code": code,
+            "account": item.get("account"),
             "type": item.get("type", "stock"),
+            "shares": item.get("shares"),
+            "avgPrice": item.get("avg_price"),
             "price": price,
             "diff": raw_diff if direction == "up" else -raw_diff if direction == "down" else 0,
             "rate": raw_rate if direction == "up" else -raw_rate if direction == "down" else 0.0,
             "direction": direction,
         }
 
-        if item.get("type") == "stock":
-            entry["avgPrice"] = item.get("avg_price")
+        avg_price = item.get("avg_price")
+        market = item.get("market")
+        index_code = MARKET_INDEX_CODE.get(market)
+        alert_eligible = (
+            item.get("type") == "stock"
+            and item.get("account") in ALERT_ELIGIBLE_ACCOUNTS
+            and avg_price is not None
+            and index_code is not None
+        )
+
+        if alert_eligible:
+            state_key = f"{item.get('account')}|{code}"
             try:
+                if index_code not in index_cache:
+                    index_cache[index_code] = fetch_index_level(token, index_code)
+                    time.sleep(0.25)
                 sell_alert, updated_state = evaluate_sell_alert(
-                    token, item, price, alert_state.get(item["code"], {})
+                    index_cache[index_code], avg_price, price, alert_state.get(state_key, {})
                 )
                 entry["sellAlert"] = sell_alert
-                alert_state[item["code"]] = updated_state
+                alert_state[state_key] = updated_state
             except Exception as exc:  # noqa: BLE001 - never let alert logic break the price feed
                 print(f"[warn] {item['name']} 매도 알림 계산 실패: {exc}", file=sys.stderr)
                 entry["sellAlert"] = False
+        elif item.get("type") == "stock":
+            entry["sellAlert"] = False
 
         stocks.append(entry)
-        time.sleep(0.25)  # stay well under the KIS per-second rate limit
 
     payload = {
         "updatedAt": datetime.now(KST).isoformat(timespec="seconds"),

@@ -1,7 +1,15 @@
 [
-  { "name": "삼성전자", "code": "005930", "type": "stock", "market": "KOSPI", "avg_price": null },
-  { "name": "KODEX 200", "code": "069500", "type": "etf" },
-  { "name": "KODEX 코스닥150", "code": "229200", "type": "etf" },
-  { "name": "인투셀", "code": "287840", "type": "stock", "market": "KOSDAQ", "avg_price": null },
-  { "name": "KODEX 방산TOP10", "code": "0080G0", "type": "etf" }
+  { "name": "삼성전자", "code": "005930", "account": "위탁", "type": "stock", "market": "KOSPI", "shares": 108, "avg_price": 191831 },
+  { "name": "KODEX 200", "code": "069500", "account": "위탁", "type": "etf", "shares": 237, "avg_price": 67855 },
+  { "name": "KODEX 코스닥150", "code": "229200", "account": "위탁", "type": "etf", "shares": 228, "avg_price": 18120 },
+  { "name": "KODEX 방산TOP10", "code": "0080G0", "account": "위탁", "type": "etf", "shares": 108, "avg_price": 11935 },
+  { "name": "현대차", "code": "005380", "account": "위탁", "type": "stock", "market": "KOSPI", "shares": 11, "avg_price": 474591 },
+  { "name": "호텔신라", "code": "008770", "account": "위탁", "type": "stock", "market": "KOSPI", "shares": 13, "avg_price": 48296 },
+  { "name": "TIGER 리츠부동산인프라", "code": "329200", "account": "위탁", "type": "etf", "shares": 300, "avg_price": 4005 },
+  { "name": "TIGER 코리아휴머노이드로보틱스", "code": "0148J0", "account": "위탁", "type": "etf", "shares": 335, "avg_price": 9921 },
+
+  { "name": "KODEX 종합채권(AA-이상)", "code": "273130", "account": "ISA", "type": "etf", "shares": 14, "avg_price": 110075 },
+  { "name": "ACE 미국배당다우존스", "code": "402970", "account": "ISA", "type": "etf", "shares": 60, "avg_price": 16205 },
+
+  { "name": "KODEX 200", "code": "069500", "account": "연금저축", "type": "etf", "shares": 7, "avg_price": 85221 }
 ]

@@ -85,7 +85,30 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
+    gap: 28px;
+  }
+  .account-section {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+  }
+  .account-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0 2px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .account-heading .count {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--sub);
   }
   .card {
     background: var(--card-bg);
@@ -106,6 +129,12 @@
     font-size: 12px;
     color: var(--sub);
     margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .holding {
+    font-size: 11.5px;
+    color: var(--sub);
+    margin-top: 4px;
     font-variant-numeric: tabular-nums;
   }
   .right {
@@ -165,16 +194,17 @@
 <div class="hint">
   이 페이지는 <code>data/quotes.json</code>을 읽어서 표시합니다. 이 파일은
   GitHub Actions가 10분마다 한국투자증권(KIS) API로 직접 갱신하므로 손으로 편집하지
-  마세요. 관심종목을 추가/삭제하거나 종목명을 바꾸려면 <code>data/watchlist.json</code>의
-  <code>name</code>/<code>code</code> 값만 수정하면 다음 자동 갱신 때 반영됩니다.<br><br>
-  개별 종목(ETF 제외)은 <code>data/watchlist.json</code>의 <code>avg_price</code>에
-  매입단가를 넣으면, 최고가 또는 매입단가 대비 해당 지수보다 10%p 이상 뒤처질 때
-  카드에 "매도 검토 권고" 표시가 뜹니다. 이건 알림일 뿐이고 이 페이지·워크플로우는
-  절대 자동으로 매도 주문을 내지 않습니다.
+  마세요. 종목·계좌·매입단가·보유수량을 바꾸려면 <code>data/watchlist.json</code>을
+  수정하면 다음 자동 갱신 때 반영됩니다.<br><br>
+  일반 위탁계좌의 개별 종목(ETF 제외)은 <code>avg_price</code>가 있으면, 최고가 또는
+  매입단가 대비 해당 지수보다 10%p 이상 뒤처질 때 카드에 "매도 검토 권고" 표시가
+  뜹니다. ISA·연금저축 계좌에는 이 규칙이 적용되지 않습니다. 이건 알림일 뿐이고
+  이 페이지·워크플로우는 절대 자동으로 매도 주문을 내지 않습니다.
 </div>
 
 <script>
   const fmtNumber = (n) => n.toLocaleString("ko-KR");
+  const ACCOUNT_ORDER = ["위탁", "ISA", "연금저축"];
 
   async function render() {
     const list = document.getElementById("list");
@@ -201,27 +231,55 @@
       return;
     }
 
-    list.innerHTML = "";
+    const groups = new Map();
     data.stocks.forEach((s) => {
-      const sign = s.diff > 0 ? "+" : s.diff < 0 ? "-" : "";
-      const arrow = s.direction === "up" ? "▲" : s.direction === "down" ? "▼" : "-";
+      const key = s.account || "기타";
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(s);
+    });
+    const orderedKeys = [
+      ...ACCOUNT_ORDER.filter((k) => groups.has(k)),
+      ...[...groups.keys()].filter((k) => !ACCOUNT_ORDER.includes(k)),
+    ];
 
-      const card = document.createElement("div");
-      card.className = "card" + (s.sellAlert ? " alert" : "");
-      card.innerHTML = `
-        <div>
-          <div class="name">${s.name}</div>
-          <div class="code">${s.code}</div>
-        </div>
-        <div class="right">
-          <div class="price">${fmtNumber(s.price)}원</div>
-          <div class="change ${s.direction}">
-            ${arrow} ${fmtNumber(Math.abs(s.diff))} (${sign}${Math.abs(s.rate).toFixed(2)}%)
+    list.innerHTML = "";
+    orderedKeys.forEach((accountName) => {
+      const items = groups.get(accountName);
+
+      const section = document.createElement("div");
+      section.className = "account-section";
+      section.innerHTML = `<div class="account-heading">
+        <span>${accountName}</span>
+        <span class="count">${items.length}종목</span>
+      </div>`;
+
+      items.forEach((s) => {
+        const sign = s.diff > 0 ? "+" : s.diff < 0 ? "-" : "";
+        const arrow = s.direction === "up" ? "▲" : s.direction === "down" ? "▼" : "-";
+        const holding = s.shares != null && s.avgPrice != null
+          ? `<div class="holding">${fmtNumber(s.shares)}주 · 평균 ${fmtNumber(s.avgPrice)}원</div>`
+          : "";
+
+        const card = document.createElement("div");
+        card.className = "card" + (s.sellAlert ? " alert" : "");
+        card.innerHTML = `
+          <div>
+            <div class="name">${s.name}</div>
+            <div class="code">${s.code}</div>
+            ${holding}
           </div>
-          ${s.sellAlert ? '<div class="alert-badge">⚠️ 매도 검토 권고</div>' : ""}
-        </div>
-      `;
-      list.appendChild(card);
+          <div class="right">
+            <div class="price">${fmtNumber(s.price)}원</div>
+            <div class="change ${s.direction}">
+              ${arrow} ${fmtNumber(Math.abs(s.diff))} (${sign}${Math.abs(s.rate).toFixed(2)}%)
+            </div>
+            ${s.sellAlert ? '<div class="alert-badge">⚠️ 매도 검토 권고</div>' : ""}
+          </div>
+        `;
+        section.appendChild(card);
+      });
+
+      list.appendChild(section);
     });
 
     updatedEl.textContent = data.updatedAt
