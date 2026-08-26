@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-08-26T15:04:06+09:00",
+  "updatedAt": "2026-08-26T16:03:52+09:00",
   "stocks": [
     {
       "name": "삼성전자",
       "code": "005930",
       "account": "위탁",
       "type": "stock",
-      "price": 262500,
-      "diff": 5500,
-      "rate": 2.14,
+      "price": 261500,
+      "diff": 4500,
+      "rate": 1.75,
       "direction": "up",
       "sellAlert": false
     },
@@ -17,9 +17,9 @@
       "code": "069500",
       "account": "위탁",
       "type": "etf",
-      "price": 107855,
-      "diff": 1060,
-      "rate": 0.99,
+      "price": 107710,
+      "diff": 915,
+      "rate": 0.86,
       "direction": "up"
     },
     {
@@ -27,9 +27,9 @@
       "code": "229200",
       "account": "위탁",
       "type": "etf",
-      "price": 14240,
-      "diff": -60,
-      "rate": -0.42,
+      "price": 14200,
+      "diff": -100,
+      "rate": -0.7,
       "direction": "down"
     },
     {
@@ -37,19 +37,19 @@
       "code": "0080G0",
       "account": "위탁",
       "type": "etf",
-      "price": 10480,
-      "diff": 30,
-      "rate": 0.29,
-      "direction": "up"
+      "price": 10420,
+      "diff": -30,
+      "rate": -0.29,
+      "direction": "down"
     },
     {
       "name": "현대차",
       "code": "005380",
       "account": "위탁",
       "type": "stock",
-      "price": 409500,
-      "diff": -11500,
-      "rate": -2.73,
+      "price": 408000,
+      "diff": -13000,
+      "rate": -3.09,
       "direction": "down",
       "sellAlert": false
     },
@@ -69,9 +69,9 @@
       "code": "329200",
       "account": "위탁",
       "type": "etf",
-      "price": 4105,
-      "diff": -15,
-      "rate": -0.36,
+      "price": 4100,
+      "diff": -20,
+      "rate": -0.49,
       "direction": "down"
     },
     {
@@ -79,9 +79,9 @@
       "code": "0148J0",
       "account": "위탁",
       "type": "etf",
-      "price": 9115,
-      "diff": -110,
-      "rate": -1.19,
+      "price": 9095,
+      "diff": -130,
+      "rate": -1.41,
       "direction": "down"
     },
     {
@@ -89,9 +89,9 @@
       "code": "273130",
       "account": "ISA",
       "type": "etf",
-      "price": 110045,
-      "diff": 245,
-      "rate": 0.22,
+      "price": 110020,
+      "diff": 220,
+      "rate": 0.2,
       "direction": "up"
     },
     {
@@ -109,9 +109,9 @@
       "code": "069500",
       "account": "연금저축",
       "type": "etf",
-      "price": 107855,
-      "diff": 1060,
-      "rate": 0.99,
+      "price": 107710,
+      "diff": 915,
+      "rate": 0.86,
       "direction": "up"
     }
   ]
