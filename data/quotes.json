@@ -1,15 +1,15 @@
 {
-  "updatedAt": "2026-09-15T17:02:10+09:00",
+  "updatedAt": "2026-09-16T11:41:02+09:00",
   "stocks": [
     {
       "name": "삼성전자",
       "code": "005930",
       "account": "위탁",
       "type": "stock",
-      "price": 248000,
-      "diff": -1000,
-      "rate": -0.4,
-      "direction": "down",
+      "price": 250750,
+      "diff": 2250,
+      "rate": 0.91,
+      "direction": "up",
       "sellAlert": false
     },
     {
@@ -17,29 +17,29 @@
       "code": "069500",
       "account": "위탁",
       "type": "etf",
-      "price": 104275,
-      "diff": -1135,
-      "rate": -1.08,
-      "direction": "down"
+      "price": 105280,
+      "diff": 1005,
+      "rate": 0.96,
+      "direction": "up"
     },
     {
       "name": "KODEX 코스닥150",
       "code": "229200",
       "account": "위탁",
       "type": "etf",
-      "price": 13685,
-      "diff": 100,
-      "rate": 0.74,
-      "direction": "up"
+      "price": 13445,
+      "diff": -240,
+      "rate": -1.75,
+      "direction": "down"
     },
     {
       "name": "KODEX 방산TOP10",
       "code": "0080G0",
       "account": "위탁",
       "type": "etf",
-      "price": 9925,
-      "diff": -425,
-      "rate": -4.11,
+      "price": 9850,
+      "diff": -75,
+      "rate": -0.76,
       "direction": "down"
     },
     {
@@ -47,9 +47,9 @@
       "code": "005380",
       "account": "위탁",
       "type": "stock",
-      "price": 368000,
-      "diff": -3500,
-      "rate": -0.94,
+      "price": 360500,
+      "diff": -6500,
+      "rate": -1.77,
       "direction": "down",
       "sellAlert": false
     },
@@ -58,9 +58,9 @@
       "code": "008770",
       "account": "위탁",
       "type": "stock",
-      "price": 40950,
-      "diff": -650,
-      "rate": -1.56,
+      "price": 40650,
+      "diff": -150,
+      "rate": -0.37,
       "direction": "down",
       "sellAlert": false
     },
@@ -79,29 +79,29 @@
       "code": "0148J0",
       "account": "위탁",
       "type": "etf",
-      "price": 9690,
-      "diff": 485,
-      "rate": 5.27,
-      "direction": "up"
+      "price": 9350,
+      "diff": -340,
+      "rate": -3.51,
+      "direction": "down"
     },
     {
       "name": "KODEX 종합채권(AA-이상)",
       "code": "273130",
       "account": "ISA",
       "type": "etf",
-      "price": 109105,
-      "diff": -150,
-      "rate": -0.14,
-      "direction": "down"
+      "price": 109345,
+      "diff": 240,
+      "rate": 0.22,
+      "direction": "up"
     },
     {
       "name": "ACE 미국배당다우존스",
       "code": "402970",
       "account": "ISA",
       "type": "etf",
-      "price": 14925,
-      "diff": 155,
-      "rate": 1.05,
+      "price": 15060,
+      "diff": 135,
+      "rate": 0.9,
       "direction": "up"
     },
     {
@@ -109,10 +109,10 @@
       "code": "069500",
       "account": "연금저축",
       "type": "etf",
-      "price": 104275,
-      "diff": -1135,
-      "rate": -1.08,
-      "direction": "down"
+      "price": 105280,
+      "diff": 1005,
+      "rate": 0.96,
+      "direction": "up"
     }
   ]
 }
