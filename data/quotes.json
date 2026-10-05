@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-02T18:57:46+09:00",
+  "updatedAt": "2026-10-05T12:21:48+09:00",
   "stocks": [
     {
       "name": "삼성전자",
@@ -47,9 +47,9 @@
       "code": "005380",
       "account": "위탁",
       "type": "stock",
-      "price": 347500,
-      "diff": -1500,
-      "rate": -0.43,
+      "price": 347000,
+      "diff": -2000,
+      "rate": -0.57,
       "direction": "down",
       "sellAlert": false
     },
@@ -58,9 +58,9 @@
       "code": "008770",
       "account": "위탁",
       "type": "stock",
-      "price": 39350,
-      "diff": 150,
-      "rate": 0.38,
+      "price": 39400,
+      "diff": 200,
+      "rate": 0.51,
       "direction": "up",
       "sellAlert": false
     },
