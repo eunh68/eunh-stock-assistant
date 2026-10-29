@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-10-29T12:47:34+09:00",
+  "updatedAt": "2026-10-29T19:26:26+09:00",
   "stocks": [
     {
       "name": "삼성전자",
       "code": "005930",
       "account": "위탁",
       "type": "stock",
-      "price": 228250,
-      "diff": -13750,
-      "rate": -5.68,
+      "price": 230000,
+      "diff": -12000,
+      "rate": -4.96,
       "direction": "down",
       "sellAlert": false
     },
@@ -17,9 +17,9 @@
       "code": "069500",
       "account": "위탁",
       "type": "etf",
-      "price": 93065,
-      "diff": -2450,
-      "rate": -2.57,
+      "price": 94465,
+      "diff": -1050,
+      "rate": -1.1,
       "direction": "down"
     },
     {
@@ -27,9 +27,9 @@
       "code": "229200",
       "account": "위탁",
       "type": "etf",
-      "price": 12375,
-      "diff": -420,
-      "rate": -3.28,
+      "price": 12425,
+      "diff": -370,
+      "rate": -2.89,
       "direction": "down"
     },
     {
@@ -37,9 +37,9 @@
       "code": "0080G0",
       "account": "위탁",
       "type": "etf",
-      "price": 7245,
-      "diff": -335,
-      "rate": -4.42,
+      "price": 7295,
+      "diff": -285,
+      "rate": -3.76,
       "direction": "down"
     },
     {
@@ -47,9 +47,9 @@
       "code": "005380",
       "account": "위탁",
       "type": "stock",
-      "price": 289500,
-      "diff": -6500,
-      "rate": -2.2,
+      "price": 292000,
+      "diff": -4000,
+      "rate": -1.35,
       "direction": "down",
       "sellAlert": false
     },
@@ -58,9 +58,9 @@
       "code": "008770",
       "account": "위탁",
       "type": "stock",
-      "price": 34250,
-      "diff": -2250,
-      "rate": -6.16,
+      "price": 34950,
+      "diff": -1550,
+      "rate": -4.25,
       "direction": "down",
       "sellAlert": false
     },
@@ -69,9 +69,9 @@
       "code": "329200",
       "account": "위탁",
       "type": "etf",
-      "price": 3935,
-      "diff": -25,
-      "rate": -0.63,
+      "price": 3940,
+      "diff": -20,
+      "rate": -0.51,
       "direction": "down"
     },
     {
@@ -79,9 +79,9 @@
       "code": "0148J0",
       "account": "위탁",
       "type": "etf",
-      "price": 8065,
-      "diff": -490,
-      "rate": -5.73,
+      "price": 8185,
+      "diff": -370,
+      "rate": -4.32,
       "direction": "down"
     },
     {
@@ -89,9 +89,9 @@
       "code": "273130",
       "account": "ISA",
       "type": "etf",
-      "price": 112005,
-      "diff": 105,
-      "rate": 0.09,
+      "price": 112040,
+      "diff": 140,
+      "rate": 0.13,
       "direction": "up"
     },
     {
@@ -99,9 +99,9 @@
       "code": "402970",
       "account": "ISA",
       "type": "etf",
-      "price": 15180,
-      "diff": 75,
-      "rate": 0.5,
+      "price": 15195,
+      "diff": 90,
+      "rate": 0.6,
       "direction": "up"
     },
     {
@@ -109,9 +109,9 @@
       "code": "069500",
       "account": "연금저축",
       "type": "etf",
-      "price": 93065,
-      "diff": -2450,
-      "rate": -2.57,
+      "price": 94465,
+      "diff": -1050,
+      "rate": -1.1,
       "direction": "down"
     }
   ]
