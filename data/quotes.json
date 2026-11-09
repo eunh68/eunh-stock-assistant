@@ -1,15 +1,15 @@
 {
-  "updatedAt": "2026-11-09T12:55:14+09:00",
+  "updatedAt": "2026-11-09T21:23:33+09:00",
   "stocks": [
     {
       "name": "삼성전자",
       "code": "005930",
       "account": "위탁",
       "type": "stock",
-      "price": 192900,
-      "diff": 4200,
-      "rate": 2.23,
-      "direction": "up",
+      "price": 187000,
+      "diff": -1700,
+      "rate": -0.9,
+      "direction": "down",
       "sellAlert": false
     },
     {
@@ -17,29 +17,29 @@
       "code": "069500",
       "account": "위탁",
       "type": "etf",
-      "price": 80425,
-      "diff": 1420,
-      "rate": 1.8,
-      "direction": "up"
+      "price": 78490,
+      "diff": -515,
+      "rate": -0.65,
+      "direction": "down"
     },
     {
       "name": "KODEX 코스닥150",
       "code": "229200",
       "account": "위탁",
       "type": "etf",
-      "price": 10670,
-      "diff": 160,
-      "rate": 1.52,
-      "direction": "up"
+      "price": 10280,
+      "diff": -230,
+      "rate": -2.19,
+      "direction": "down"
     },
     {
       "name": "KODEX 방산TOP10",
       "code": "0080G0",
       "account": "위탁",
       "type": "etf",
-      "price": 6315,
-      "diff": -90,
-      "rate": -1.41,
+      "price": 6170,
+      "diff": -235,
+      "rate": -3.67,
       "direction": "down"
     },
     {
@@ -47,9 +47,9 @@
       "code": "005380",
       "account": "위탁",
       "type": "stock",
-      "price": 276000,
-      "diff": -3500,
-      "rate": -1.25,
+      "price": 268000,
+      "diff": -11500,
+      "rate": -4.11,
       "direction": "down",
       "sellAlert": false
     },
@@ -58,10 +58,10 @@
       "code": "008770",
       "account": "위탁",
       "type": "stock",
-      "price": 35700,
-      "diff": 200,
-      "rate": 0.56,
-      "direction": "up",
+      "price": 35200,
+      "diff": -300,
+      "rate": -0.85,
+      "direction": "down",
       "sellAlert": false
     },
     {
@@ -69,9 +69,9 @@
       "code": "329200",
       "account": "위탁",
       "type": "etf",
-      "price": 3670,
-      "diff": -35,
-      "rate": -0.94,
+      "price": 3650,
+      "diff": -55,
+      "rate": -1.48,
       "direction": "down"
     },
     {
@@ -79,9 +79,9 @@
       "code": "0148J0",
       "account": "위탁",
       "type": "etf",
-      "price": 7010,
-      "diff": -5,
-      "rate": -0.07,
+      "price": 6715,
+      "diff": -300,
+      "rate": -4.28,
       "direction": "down"
     },
     {
@@ -89,19 +89,19 @@
       "code": "273130",
       "account": "ISA",
       "type": "etf",
-      "price": 113225,
-      "diff": -165,
-      "rate": -0.15,
-      "direction": "down"
+      "price": 113485,
+      "diff": 95,
+      "rate": 0.08,
+      "direction": "up"
     },
     {
       "name": "ACE 미국배당다우존스",
       "code": "402970",
       "account": "ISA",
       "type": "etf",
-      "price": 15445,
-      "diff": -65,
-      "rate": -0.42,
+      "price": 15415,
+      "diff": -95,
+      "rate": -0.61,
       "direction": "down"
     },
     {
@@ -109,10 +109,10 @@
       "code": "069500",
       "account": "연금저축",
       "type": "etf",
-      "price": 80425,
-      "diff": 1420,
-      "rate": 1.8,
-      "direction": "up"
+      "price": 78490,
+      "diff": -515,
+      "rate": -0.65,
+      "direction": "down"
     }
   ]
 }
