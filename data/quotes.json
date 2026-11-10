@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-11-10T14:28:50+09:00",
+  "updatedAt": "2026-11-10T22:41:32+09:00",
   "stocks": [
     {
       "name": "삼성전자",
       "code": "005930",
       "account": "위탁",
       "type": "stock",
-      "price": 198600,
-      "diff": 8700,
-      "rate": 4.58,
+      "price": 197300,
+      "diff": 7400,
+      "rate": 3.9,
       "direction": "up",
       "sellAlert": false
     },
@@ -17,9 +17,9 @@
       "code": "069500",
       "account": "위탁",
       "type": "etf",
-      "price": 82085,
-      "diff": 3595,
-      "rate": 4.58,
+      "price": 82000,
+      "diff": 3510,
+      "rate": 4.47,
       "direction": "up"
     },
     {
@@ -27,9 +27,9 @@
       "code": "229200",
       "account": "위탁",
       "type": "etf",
-      "price": 10740,
-      "diff": 460,
-      "rate": 4.47,
+      "price": 10810,
+      "diff": 530,
+      "rate": 5.16,
       "direction": "up"
     },
     {
@@ -37,9 +37,9 @@
       "code": "0080G0",
       "account": "위탁",
       "type": "etf",
-      "price": 6505,
-      "diff": 335,
-      "rate": 5.43,
+      "price": 6525,
+      "diff": 355,
+      "rate": 5.75,
       "direction": "up"
     },
     {
@@ -47,9 +47,9 @@
       "code": "005380",
       "account": "위탁",
       "type": "stock",
-      "price": 275000,
-      "diff": 3500,
-      "rate": 1.29,
+      "price": 274000,
+      "diff": 2500,
+      "rate": 0.92,
       "direction": "up",
       "sellAlert": false
     },
@@ -58,9 +58,9 @@
       "code": "008770",
       "account": "위탁",
       "type": "stock",
-      "price": 35150,
-      "diff": 100,
-      "rate": 0.29,
+      "price": 35450,
+      "diff": 400,
+      "rate": 1.14,
       "direction": "up",
       "sellAlert": false
     },
@@ -69,19 +69,19 @@
       "code": "329200",
       "account": "위탁",
       "type": "etf",
-      "price": 3642,
-      "diff": -8,
-      "rate": -0.22,
-      "direction": "down"
+      "price": 3650,
+      "diff": 0,
+      "rate": 0.0,
+      "direction": "flat"
     },
     {
       "name": "TIGER 코리아휴머노이드로보틱스",
       "code": "0148J0",
       "account": "위탁",
       "type": "etf",
-      "price": 7005,
-      "diff": 290,
-      "rate": 4.32,
+      "price": 7065,
+      "diff": 350,
+      "rate": 5.21,
       "direction": "up"
     },
     {
@@ -89,9 +89,9 @@
       "code": "273130",
       "account": "ISA",
       "type": "etf",
-      "price": 113545,
-      "diff": 60,
-      "rate": 0.05,
+      "price": 113580,
+      "diff": 95,
+      "rate": 0.08,
       "direction": "up"
     },
     {
@@ -99,9 +99,9 @@
       "code": "402970",
       "account": "ISA",
       "type": "etf",
-      "price": 15400,
-      "diff": -15,
-      "rate": -0.1,
+      "price": 15375,
+      "diff": -40,
+      "rate": -0.26,
       "direction": "down"
     },
     {
@@ -109,9 +109,9 @@
       "code": "069500",
       "account": "연금저축",
       "type": "etf",
-      "price": 82085,
-      "diff": 3595,
-      "rate": 4.58,
+      "price": 82000,
+      "diff": 3510,
+      "rate": 4.47,
       "direction": "up"
     }
   ]
